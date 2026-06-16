@@ -10,847 +10,685 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="SplitKita" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0d0d0d;
-      --surface: #1a1a1a;
-      --surface2: #242424;
-      --border: #2e2e2e;
-      --accent: #4ade80;
-      --accent-dim: rgba(74,222,128,0.12);
-      --danger: #f87171;
-      --danger-dim: rgba(248,113,113,0.12);
-      --warn: #fbbf24;
-      --text: #f0f0f0;
-      --muted: #888;
-      --radius: 14px;
-      --radius-sm: 8px;
+      --bg: #0d0d0d; --surface: #1a1a1a; --surface2: #242424;
+      --border: #2e2e2e; --accent: #4ade80; --accent-dim: rgba(74,222,128,0.12);
+      --danger: #f87171; --danger-dim: rgba(248,113,113,0.12);
+      --warn: #fbbf24; --text: #f0f0f0; --muted: #777; --radius: 14px; --radius-sm: 8px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      max-width: 480px;
-      margin: 0 auto;
-      padding-bottom: 80px;
-    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; max-width: 480px; margin: 0 auto; padding-bottom: 100px; }
 
-    /* ─── HEADER ─── */
-    .app-header {
-      padding: 20px 20px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    /* HEADER */
+    .app-header { padding: 20px 16px 0; display: flex; align-items: center; justify-content: space-between; }
     .app-logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
     .app-logo span { color: var(--accent); }
-    .btn-icon {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-    }
 
-    /* ─── VIEWS ─── */
-    .view { display: none; padding: 0 16px; }
+    /* VIEWS */
+    .view { display: none; }
     .view.active { display: block; }
 
-    /* ─── SESSION LIST ─── */
-    .section-title {
-      font-size: 12px; font-weight: 600;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.8px; margin: 24px 0 10px;
-    }
-    .session-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
+    /* SECTION TITLE */
+    .section-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin: 20px 16px 8px; }
+
+    /* SESSION LIST */
+    .session-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 0 16px 10px; cursor: pointer; transition: border-color 0.15s; }
     .session-card:active { border-color: var(--accent); }
-    .session-card-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+    .session-card.lunas { border-color: rgba(74,222,128,0.3); }
+    .session-card-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
     .session-card-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
-    .session-card-meta span { display: flex; align-items: center; gap: 4px; }
-    .empty-state {
-      text-align: center; padding: 60px 20px;
-      color: var(--muted); font-size: 14px; line-height: 1.7;
-    }
+    .badge-lunas { background: var(--accent-dim); color: var(--accent); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+    .badge-open { background: rgba(251,191,36,0.12); color: var(--warn); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; line-height: 1.8; }
     .empty-state .emoji { font-size: 40px; margin-bottom: 12px; }
 
-    /* ─── FAB ─── */
-    .fab {
-      position: fixed; bottom: 24px; right: 50%;
-      transform: translateX(50%);
-      max-width: calc(480px - 32px); width: calc(100% - 32px);
-      background: var(--accent);
-      color: #000; font-weight: 700; font-size: 15px;
-      border: none; border-radius: 50px;
-      padding: 16px 24px;
-      cursor: pointer; display: flex;
-      align-items: center; justify-content: center; gap: 8px;
-      box-shadow: 0 4px 24px rgba(74,222,128,0.25);
-      transition: opacity 0.15s;
-    }
+    /* FAB */
+    .fab { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); max-width: calc(480px - 32px); width: calc(100% - 32px); background: var(--accent); color: #000; font-weight: 700; font-size: 15px; border: none; border-radius: 50px; padding: 16px 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 24px rgba(74,222,128,0.25); transition: opacity 0.15s; font-family: inherit; z-index: 50; }
     .fab:active { opacity: 0.85; }
+    .fab.danger { background: var(--danger); box-shadow: 0 4px 24px rgba(248,113,113,0.2); }
+    .fab.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); box-shadow: none; }
 
-    /* ─── MODAL ─── */
-    .modal-overlay {
-      display: none; position: fixed;
-      inset: 0; background: rgba(0,0,0,0.7);
-      z-index: 100; align-items: flex-end; justify-content: center;
-    }
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; align-items: flex-end; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--surface);
-      border-radius: var(--radius) var(--radius) 0 0;
-      padding: 24px 20px 40px;
-      width: 100%; max-width: 480px;
-      animation: slideUp 0.25s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
-    .modal-handle {
-      width: 40px; height: 4px;
-      background: var(--border); border-radius: 99px;
-      margin: 0 auto 20px;
-    }
+    .modal { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; padding: 20px 20px 44px; width: 100%; max-width: 480px; max-height: 92dvh; overflow-y: auto; animation: slideUp 0.22s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 18px; }
+    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
 
-    /* ─── FORM ─── */
-    label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 6px; }
-    input, select {
-      width: 100%; background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text); font-family: inherit;
-      font-size: 15px; padding: 12px 14px;
-      outline: none; transition: border-color 0.15s;
-    }
+    /* FORM */
+    label { font-size: 11px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 6px; letter-spacing: 0.3px; }
+    input, select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 15px; padding: 12px 14px; outline: none; transition: border-color 0.15s; }
     input:focus, select:focus { border-color: var(--accent); }
-    .form-group { margin-bottom: 16px; }
-    .btn {
-      width: 100%; background: var(--accent);
-      color: #000; font-weight: 700;
-      font-size: 15px; border: none;
-      border-radius: var(--radius-sm);
-      padding: 14px; cursor: pointer;
-      transition: opacity 0.15s;
-    }
+    input::placeholder { color: var(--muted); }
+    .form-group { margin-bottom: 14px; }
+    .btn { width: 100%; background: var(--accent); color: #000; font-weight: 700; font-size: 15px; border: none; border-radius: var(--radius-sm); padding: 14px; cursor: pointer; transition: opacity 0.15s; font-family: inherit; }
     .btn:active { opacity: 0.85; }
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); margin-top: 10px; }
+    .btn-danger { background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger); margin-top: 10px; }
 
-    /* ─── SESSION DETAIL ─── */
-    .back-btn {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 14px; color: var(--accent);
-      background: none; border: none;
-      cursor: pointer; padding: 20px 0 4px;
-      font-family: inherit;
-    }
-    .session-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .session-subtitle { font-size: 13px; color: var(--muted); }
+    /* BACK */
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--accent); background: none; border: none; cursor: pointer; padding: 16px 16px 4px; font-family: inherit; }
 
-    /* SUMMARY CARD */
-    .summary-row {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px; margin: 16px 0;
-    }
-    .summary-total {
-      font-size: 28px; font-weight: 700;
-      color: var(--accent); margin-bottom: 4px;
-    }
-    .summary-label { font-size: 12px; color: var(--muted); }
-    .summary-members {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
-    }
-    .member-chip {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 99px; padding: 4px 12px;
-      font-size: 12px; font-weight: 500;
-    }
+    /* DETAIL HEADER */
+    .detail-header { padding: 0 16px 0; }
+    .detail-title { font-size: 22px; font-weight: 700; }
+    .detail-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
-    /* MEMBER BALANCES */
-    .balance-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 8px;
-      display: flex; align-items: center;
-      justify-content: space-between;
-    }
+    /* STEPS */
+    .step-indicator { display: flex; align-items: center; gap: 0; margin: 16px 16px 0; }
+    .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--muted); transition: all 0.2s; }
+    .step-dot.active { background: var(--accent); border-color: var(--accent); color: #000; }
+    .step-dot.done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+    .step-label { font-size: 10px; color: var(--muted); font-weight: 500; }
+    .step-label.active { color: var(--accent); }
+    .step-line { height: 2px; flex: 1; background: var(--border); margin-bottom: 14px; transition: background 0.2s; }
+    .step-line.done { background: var(--accent); }
+
+    /* TRANSACTION INPUT AREA */
+    .tx-input-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 12px 16px; }
+    .tx-input-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--accent); }
+    .tx-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 8px; }
+    .tx-row .person-label { font-size: 12px; font-weight: 600; color: var(--text); min-width: 70px; padding-bottom: 14px; }
+    .tx-row input { flex: 1; }
+    .add-tx-btn { width: calc(100% - 32px); margin: 0 16px 8px; background: var(--surface2); border: 1px dashed var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 11px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .add-tx-btn:active { border-color: var(--accent); color: var(--accent); }
+
+    /* TX LIST */
+    .tx-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin: 0 16px 8px; }
+    .tx-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .tx-item-desc { font-size: 14px; font-weight: 600; }
+    .tx-item-amount { font-size: 15px; font-weight: 700; color: var(--accent); }
+    .tx-item-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .tx-delete { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; }
+    .tx-delete:active { color: var(--danger); }
+    .tx-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tx-chip { background: var(--surface2); border-radius: 99px; padding: 2px 8px; font-size: 11px; color: var(--muted); }
+
+    /* RESULT */
+    .result-banner { margin: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+    .result-total { font-size: 30px; font-weight: 700; color: var(--accent); }
+    .result-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .result-per { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .transfer-card { background: var(--accent-dim); border: 1px solid rgba(74,222,128,0.2); border-radius: var(--radius); padding: 14px 16px; margin: 0 16px 8px; }
+    .transfer-from-to { font-size: 14px; font-weight: 600; }
+    .transfer-amount { font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 2px; }
+    .transfer-arrow { color: var(--muted); font-size: 12px; }
+
+    .balance-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin: 0 16px 8px; display: flex; justify-content: space-between; align-items: center; }
     .balance-name { font-size: 14px; font-weight: 600; }
-    .balance-paid { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .balance-net {
-      font-size: 14px; font-weight: 700; text-align: right;
-    }
-    .balance-net.positive { color: var(--accent); }
-    .balance-net.negative { color: var(--danger); }
+    .balance-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .balance-net { font-size: 14px; font-weight: 700; }
+    .balance-net.pos { color: var(--accent); }
+    .balance-net.neg { color: var(--danger); }
     .balance-net.zero { color: var(--muted); }
 
-    /* TRANSFER INSTRUCTIONS */
-    .transfer-card {
-      background: var(--accent-dim);
-      border: 1px solid rgba(74,222,128,0.2);
-      border-radius: var(--radius);
-      padding: 14px 16px; margin-bottom: 8px;
-    }
-    .transfer-text { font-size: 14px; font-weight: 500; }
-    .transfer-amount { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 4px; }
-    .transfer-arrow { color: var(--muted); }
+    /* LUNAS BANNER */
+    .lunas-banner { margin: 12px 16px; background: var(--accent-dim); border: 1px solid rgba(74,222,128,0.3); border-radius: var(--radius); padding: 18px; text-align: center; }
+    .lunas-banner .icon { font-size: 36px; margin-bottom: 8px; }
+    .lunas-banner .title { font-size: 18px; font-weight: 700; color: var(--accent); }
+    .lunas-banner .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-    /* EXPENSE LIST */
-    .expense-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px; margin-bottom: 8px;
-    }
-    .expense-header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .expense-desc { font-size: 14px; font-weight: 600; }
-    .expense-amount { font-size: 15px; font-weight: 700; color: var(--accent); }
-    .expense-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
-    .expense-participants {
-      display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px;
-    }
-    .participant-chip {
-      background: var(--surface2);
-      border-radius: 99px; padding: 2px 8px;
-      font-size: 11px; color: var(--muted);
-    }
-    .expense-delete {
-      background: none; border: none;
-      color: var(--danger); font-size: 16px;
-      cursor: pointer; padding: 4px;
-    }
+    /* SPLIT TOGGLE */
+    .split-toggle { display: flex; background: var(--surface2); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 12px; }
+    .split-toggle button { flex: 1; padding: 8px; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--muted); }
+    .split-toggle button.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
 
-    /* MEMBER INPUT LIST */
-    .member-input-row {
-      display: flex; gap: 8px; align-items: center;
-      margin-bottom: 8px;
-    }
-    .member-input-row input { flex: 1; }
-    .remove-member {
-      background: var(--danger-dim);
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      border-radius: var(--radius-sm);
-      width: 38px; height: 38px; min-width: 38px;
-      font-size: 18px; cursor: pointer; display: flex;
-      align-items: center; justify-content: center;
-    }
-    .add-member-btn {
-      width: 100%; background: var(--surface2);
-      border: 1px dashed var(--border);
-      color: var(--muted); border-radius: var(--radius-sm);
-      padding: 10px; font-size: 13px;
-      cursor: pointer; font-family: inherit;
-      transition: border-color 0.15s;
-    }
-    .add-member-btn:active { border-color: var(--accent); }
-
-    /* SPLIT TYPE TOGGLE */
-    .split-toggle {
-      display: flex; background: var(--surface2);
-      border-radius: var(--radius-sm); padding: 4px; margin-bottom: 16px;
-    }
-    .split-toggle button {
-      flex: 1; padding: 8px; border: none;
-      border-radius: 6px; font-family: inherit;
-      font-size: 13px; font-weight: 500;
-      cursor: pointer; transition: all 0.15s;
-      background: transparent; color: var(--muted);
-    }
-    .split-toggle button.active {
-      background: var(--surface);
-      color: var(--text);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-    }
-
-    /* MEMBER CHECKBOX LIST */
-    .member-check-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-    .member-check-item {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 10px 14px;
-      cursor: pointer; transition: border-color 0.15s;
-    }
+    /* MEMBER CHECK */
+    .member-check-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; cursor: pointer; transition: border-color 0.15s; margin-bottom: 6px; }
     .member-check-item.selected { border-color: var(--accent); }
-    .member-check-item .check {
-      width: 18px; height: 18px; border-radius: 50%;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; transition: all 0.15s;
-    }
-    .member-check-item.selected .check {
-      background: var(--accent); border-color: var(--accent); color: #000;
-    }
-    .member-check-item .name { font-size: 14px; font-weight: 500; flex: 1; }
-    .member-check-item .custom-amount {
-      width: 90px; display: none;
-    }
-    .member-check-item.selected.custom .custom-amount { display: block; }
+    .chk { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.15s; flex-shrink: 0; }
+    .member-check-item.selected .chk { background: var(--accent); border-color: var(--accent); color: #000; }
+    .chk-name { font-size: 14px; font-weight: 500; flex: 1; }
+    .chk-amount { width: 90px; display: none; }
+    .member-check-item.selected.custom .chk-amount { display: block; }
+
+    /* MEMBER INPUT */
+    .member-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .member-input-row input { flex: 1; }
+    .rm-btn { background: var(--danger-dim); border: 1px solid var(--danger); color: var(--danger); border-radius: var(--radius-sm); width: 38px; height: 38px; min-width: 38px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .add-member-btn { width: 100%; background: var(--surface2); border: 1px dashed var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 10px; font-size: 13px; cursor: pointer; font-family: inherit; margin-top: 4px; }
 
     /* TABS */
-    .tabs {
-      display: flex; gap: 0; margin: 16px 0 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .tab {
-      flex: 1; padding: 10px; text-align: center;
-      font-size: 13px; font-weight: 500;
-      color: var(--muted); cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s;
-    }
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin: 12px 16px 0; }
+    .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    .tab-content { display: none; padding-top: 16px; }
+    .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     /* LOADER */
-    .loader {
-      display: flex; align-items: center; justify-content: center;
-      padding: 40px; color: var(--muted); gap: 8px; font-size: 14px;
-    }
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
+    .loader { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); gap: 8px; font-size: 14px; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .badge {
-      display: inline-block;
-      background: var(--accent-dim);
-      color: var(--accent);
-      border-radius: 99px; padding: 2px 8px;
-      font-size: 11px; font-weight: 600;
-    }
+    /* TOAST */
+    .toast { position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: 99px; padding: 10px 20px; font-size: 13px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 200; opacity: 0; transition: opacity 0.2s; white-space: nowrap; pointer-events: none; }
+    .toast.show { opacity: 1; }
+
+    /* WARN */
+    .warn-text { font-size: 12px; color: var(--warn); margin-bottom: 10px; }
 
     select option { background: #1a1a1a; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
 
-    .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-
-    .toast {
-      position: fixed; bottom: 100px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      padding: 10px 20px; font-size: 13px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      z-index: 200; opacity: 0;
-      transition: opacity 0.2s;
-      white-space: nowrap;
-    }
-    .toast.show { opacity: 1; }
+    /* FAB GROUP */
+    .fab-group { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: calc(480px - 32px); display: flex; gap: 10px; z-index: 50; }
+    .fab-group .fab { position: static; transform: none; width: auto; flex: 1; }
   </style>
 </head>
 <body>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══════════════════════════════════
-     VIEW: HOME
-════════════════════════════════════ -->
+<!-- ═══ VIEW: HOME ═══ -->
 <div class="view active" id="view-home">
   <div class="app-header">
     <div class="app-logo">Split<span>Kita</span></div>
   </div>
-  <div style="padding: 0 16px;">
-    <p class="section-title">Sesi Aktif</p>
-    <div id="session-list">
-      <div class="loader"><div class="spinner"></div> Memuat...</div>
-    </div>
-  </div>
-  <button class="fab" onclick="openModal('modal-new-session')">
-    <span>＋</span> Sesi Baru
-  </button>
+  <p class="section-title">Sesi Tagihan</p>
+  <div id="session-list"><div class="loader"><div class="spinner"></div> Memuat...</div></div>
+  <button class="fab" onclick="openModal('modal-new-session')">＋ Sesi Baru</button>
 </div>
 
-<!-- ═══════════════════════════════════
-     VIEW: SESSION DETAIL
-════════════════════════════════════ -->
+<!-- ═══ VIEW: DETAIL ═══ -->
 <div class="view" id="view-detail">
-  <div style="padding: 0 16px;">
-    <button class="back-btn" onclick="goHome()">← Kembali</button>
-    <div class="session-title" id="detail-title">—</div>
-    <div class="session-subtitle" id="detail-subtitle">—</div>
+  <button class="back-btn" onclick="goHome()">← Kembali</button>
+  <div class="detail-header">
+    <div class="detail-title" id="d-title"></div>
+    <div class="detail-sub" id="d-sub"></div>
+  </div>
 
-    <div class="summary-row">
-      <div class="summary-label">Total Belanja</div>
-      <div class="summary-total" id="detail-total">Rp 0</div>
-      <div class="summary-label" id="detail-per-orang" style="margin-top:4px;">— per orang</div>
-      <div class="summary-members" id="detail-members"></div>
+  <!-- Step indicator -->
+  <div class="step-indicator" id="step-indicator">
+    <div class="step">
+      <div class="step-dot done" id="sdot-1">✓</div>
+      <div class="step-label active">Anggota</div>
     </div>
-
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('tab-hasil')">Hasil</div>
-      <div class="tab" onclick="switchTab('tab-pengeluaran')">Pengeluaran</div>
+    <div class="step-line done" id="sline-1"></div>
+    <div class="step">
+      <div class="step-dot active" id="sdot-2">2</div>
+      <div class="step-label active" id="slabel-2">Pengeluaran</div>
     </div>
-
-    <!-- TAB: HASIL -->
-    <div class="tab-content active" id="tab-hasil">
-      <p class="section-title">Instruksi Transfer</p>
-      <div id="transfer-list"></div>
-      <p class="section-title">Saldo Per Orang</p>
-      <div id="balance-list"></div>
-    </div>
-
-    <!-- TAB: PENGELUARAN -->
-    <div class="tab-content" id="tab-pengeluaran">
-      <div id="expense-list"></div>
-      <div style="height:16px;"></div>
+    <div class="step-line" id="sline-2"></div>
+    <div class="step">
+      <div class="step-dot" id="sdot-3">3</div>
+      <div class="step-label" id="slabel-3">Hasil</div>
     </div>
   </div>
 
-  <button class="fab" onclick="openModal('modal-add-expense')">
-    <span>＋</span> Tambah Pengeluaran
-  </button>
+  <!-- PHASE 2: INPUT TRANSAKSI -->
+  <div id="phase-input">
+    <div class="tx-input-card" id="tx-form-card">
+      <div class="tx-input-title">＋ Tambah Pengeluaran</div>
+      <div class="form-group">
+        <label>Deskripsi</label>
+        <input type="text" id="tx-desc" placeholder="Belanja, bensin, makan..." />
+      </div>
+      <div class="form-group">
+        <label>Jumlah Bayar</label>
+        <input type="number" id="tx-amount" placeholder="150000" inputmode="numeric" />
+      </div>
+      <div class="form-group">
+        <label>Dibayar Oleh</label>
+        <select id="tx-payer"></select>
+      </div>
+      <div class="form-group">
+        <label>Peserta</label>
+        <div class="split-toggle">
+          <button class="active" id="tog-eq" onclick="setTxSplit('equal')">Rata</button>
+          <button id="tog-cu" onclick="setTxSplit('custom')">Custom</button>
+        </div>
+        <div id="tx-participants"></div>
+        <div class="warn-text" id="tx-warn" style="display:none;"></div>
+      </div>
+      <button class="btn" onclick="saveTx()">Simpan Pengeluaran</button>
+    </div>
+
+    <p class="section-title" id="tx-list-label" style="display:none;">Pengeluaran Tercatat</p>
+    <div id="tx-list"></div>
+
+    <div style="height: 80px;"></div>
+  </div>
+
+  <!-- PHASE 3: HASIL -->
+  <div id="phase-result" style="display:none;">
+    <div id="lunas-banner-wrap"></div>
+    <div class="result-banner" id="result-banner">
+      <div class="result-label">Total Belanja</div>
+      <div class="result-total" id="res-total">Rp 0</div>
+      <div class="result-per" id="res-per"></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('rt-transfer')">Transfer</div>
+      <div class="tab" onclick="switchTab('rt-saldo')">Saldo</div>
+      <div class="tab" onclick="switchTab('rt-detail')">Detail</div>
+    </div>
+
+    <div class="tab-content active" id="rt-transfer">
+      <div style="height:12px;"></div>
+      <div id="res-transfers"></div>
+      <div style="height:8px;"></div>
+    </div>
+    <div class="tab-content" id="rt-saldo">
+      <div style="height:12px;"></div>
+      <div id="res-balances"></div>
+      <div style="height:8px;"></div>
+    </div>
+    <div class="tab-content" id="rt-detail">
+      <div style="height:12px;"></div>
+      <div id="res-txlist"></div>
+      <div style="height:8px;"></div>
+    </div>
+
+    <div style="height: 90px;"></div>
+  </div>
+
+  <!-- FAB area -->
+  <div id="fab-area"></div>
 </div>
 
-<!-- ═══════════════════════════════════
-     MODAL: NEW SESSION
-════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-new-session" onclick="closeModalOutside(event, 'modal-new-session')">
+<!-- ═══ MODAL: NEW SESSION ═══ -->
+<div class="modal-overlay" id="modal-new-session" onclick="omClose(event,'modal-new-session')">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Buat Sesi Baru</div>
-
     <div class="form-group">
       <label>Nama Sesi</label>
-      <input type="text" id="new-session-name" placeholder="Belanja Bulanan, Liburan Bali..." />
+      <input type="text" id="ns-name" placeholder="Belanja Bulanan, Liburan Bali..." />
     </div>
-
     <div class="form-group">
       <label>Anggota</label>
       <div id="member-inputs">
-        <div class="member-input-row">
-          <input type="text" placeholder="Nama orang 1" class="member-name-input" />
-        </div>
-        <div class="member-input-row">
-          <input type="text" placeholder="Nama orang 2" class="member-name-input" />
-        </div>
+        <div class="member-input-row"><input type="text" placeholder="Nama orang 1" class="mi" /></div>
+        <div class="member-input-row"><input type="text" placeholder="Nama orang 2" class="mi" /></div>
       </div>
-      <button class="add-member-btn" onclick="addMemberInput()">＋ Tambah Orang</button>
+      <button class="add-member-btn" onclick="addMI()">＋ Tambah Orang</button>
     </div>
-
-    <button class="btn" onclick="createSession()">Buat Sesi</button>
-    <div style="height:10px;"></div>
+    <button class="btn" onclick="createSession()">Buat Sesi & Mulai Input</button>
     <button class="btn btn-ghost" onclick="closeModal('modal-new-session')">Batal</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════
-     MODAL: ADD EXPENSE
-════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-add-expense" onclick="closeModalOutside(event, 'modal-add-expense')">
-  <div class="modal" style="max-height:90dvh; overflow-y:auto;">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Tambah Pengeluaran</div>
-
-    <div class="form-group">
-      <label>Deskripsi</label>
-      <input type="text" id="exp-desc" placeholder="Belanja groceries, bensin..." />
-    </div>
-
-    <div class="form-group">
-      <label>Total Bayar</label>
-      <input type="number" id="exp-amount" placeholder="150000" inputmode="numeric" />
-    </div>
-
-    <div class="form-group">
-      <label>Dibayar Oleh</label>
-      <select id="exp-payer"></select>
-    </div>
-
-    <div class="form-group">
-      <label>Peserta (yang ikut pakai)</label>
-      <div class="split-toggle">
-        <button class="active" id="toggle-equal" onclick="setSplitType('equal')">Rata</button>
-        <button id="toggle-custom" onclick="setSplitType('custom')">Custom</button>
-      </div>
-      <div class="member-check-list" id="exp-participants"></div>
-    </div>
-
-    <div id="custom-total-warning" style="display:none; font-size:12px; color:var(--warn); margin-bottom:12px;"></div>
-
-    <button class="btn" onclick="addExpense()">Simpan</button>
-    <div style="height:10px;"></div>
-    <button class="btn btn-ghost" onclick="closeModal('modal-add-expense')">Batal</button>
-  </div>
-</div>
-
-<!-- FIREBASE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy }
-    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc, getDoc }
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBILmwT_UrVuf0T2VCfVktNL8MhTjc9BhM",
-    authDomain: "split-bill-e096b.firebaseapp.com",
-    projectId: "split-bill-e096b",
-    storageBucket: "split-bill-e096b.firebasestorage.app",
-    messagingSenderId: "1092237693296",
-    appId: "1:1092237693296:web:614eae7dac9b1f59a2bfb5",
-    measurementId: "G-H8H4RBJW8G"
-  };
+const db = getFirestore(initializeApp({
+  apiKey: "AIzaSyBILmwT_UrVuf0T2VCfVktNL8MhTjc9BhM",
+  authDomain: "split-bill-e096b.firebaseapp.com",
+  projectId: "split-bill-e096b",
+  storageBucket: "split-bill-e096b.firebasestorage.app",
+  messagingSenderId: "1092237693296",
+  appId: "1:1092237693296:web:614eae7dac9b1f59a2bfb5"
+}));
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  window._db = db;
+// ── STATE ──
+const S = { session: null, splitType: 'equal', expenses: [], unsub: null };
 
-  // ── STATE ──
-  window._state = { currentSession: null, splitType: 'equal' };
+// ── UTILS ──
+const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+const $ = id => document.getElementById(id);
+window.toast = msg => {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+};
+window.openModal = id => $(id).classList.add('open');
+window.closeModal = id => $(id).classList.remove('open');
+window.omClose = (e, id) => { if (e.target.id === id) closeModal(id); };
 
-  // ── UTILS ──
-  window.fmt = (n) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
-  window.toast = (msg) => {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  };
+// ── MEMBER INPUT ──
+window.addMI = () => {
+  const c = $('member-inputs');
+  const n = c.querySelectorAll('.mi').length + 1;
+  const row = document.createElement('div');
+  row.className = 'member-input-row';
+  row.innerHTML = `<input type="text" placeholder="Nama orang ${n}" class="mi" /><button class="rm-btn" onclick="this.parentElement.remove()">×</button>`;
+  c.appendChild(row);
+};
 
-  // ── MODAL ──
-  window.openModal = (id) => document.getElementById(id).classList.add('open');
-  window.closeModal = (id) => document.getElementById(id).classList.remove('open');
-  window.closeModalOutside = (e, id) => { if (e.target.id === id) closeModal(id); };
+// ── CREATE SESSION ──
+window.createSession = async () => {
+  const name = $('ns-name').value.trim();
+  const members = [...document.querySelectorAll('.mi')].map(i => i.value.trim()).filter(Boolean);
+  if (!name) return toast('Nama sesi wajib diisi');
+  if (members.length < 2) return toast('Minimal 2 orang');
+  try {
+    const ref = await addDoc(collection(db, 'sessions'), { name, members, status: 'open', createdAt: serverTimestamp() });
+    toast('Sesi dibuat ✓');
+    closeModal('modal-new-session');
+    $('ns-name').value = '';
+    document.querySelectorAll('.mi').forEach((el, i) => { if (i > 1) el.parentElement.remove(); else el.value = ''; });
+    openSession(ref.id, { name, members, status: 'open' });
+  } catch(e) { toast('Error: ' + e.message); }
+};
 
-  // ── MEMBER INPUTS ──
-  window.addMemberInput = () => {
-    const c = document.getElementById('member-inputs');
-    const idx = c.querySelectorAll('.member-input-row').length + 1;
-    const row = document.createElement('div');
-    row.className = 'member-input-row';
-    row.innerHTML = `
-      <input type="text" placeholder="Nama orang ${idx}" class="member-name-input" />
-      <button class="remove-member" onclick="this.parentElement.remove()">×</button>`;
-    c.appendChild(row);
-  };
-
-  // ── CREATE SESSION ──
-  window.createSession = async () => {
-    const name = document.getElementById('new-session-name').value.trim();
-    const inputs = document.querySelectorAll('.member-name-input');
-    const members = [...inputs].map(i => i.value.trim()).filter(Boolean);
-    if (!name) return toast('Nama sesi wajib diisi');
-    if (members.length < 2) return toast('Minimal 2 orang');
-
-    try {
-      const ref = await addDoc(collection(db, 'sessions'), {
-        name, members, createdAt: serverTimestamp()
-      });
-      toast('Sesi dibuat ✓');
-      closeModal('modal-new-session');
-      document.getElementById('new-session-name').value = '';
-      document.querySelectorAll('.member-name-input').forEach((el, i) => { if (i > 1) el.parentElement.remove(); else el.value = ''; });
-      openSession(ref.id, name, members);
-    } catch(e) { toast('Gagal: ' + e.message); }
-  };
-
-  // ── LOAD SESSIONS ──
-  const loadSessions = () => {
-    const q = query(collection(db, 'sessions'), orderBy('createdAt', 'desc'));
-    onSnapshot(q, (snap) => {
-      const el = document.getElementById('session-list');
-      if (snap.empty) {
-        el.innerHTML = `<div class="empty-state"><div class="emoji">🧾</div>Belum ada sesi.<br>Buat sesi baru untuk mulai split bill.</div>`;
-        return;
-      }
-      el.innerHTML = '';
-      snap.forEach(d => {
-        const s = d.data();
-        const card = document.createElement('div');
-        card.className = 'session-card';
-        card.innerHTML = `
-          <div class="session-card-name">${s.name}</div>
-          <div class="session-card-meta">
-            <span>👥 ${s.members?.length || 0} orang</span>
-            <span>${s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString('id-ID') : '—'}</span>
-          </div>`;
-        card.onclick = () => openSession(d.id, s.name, s.members);
-        el.appendChild(card);
-      });
-    });
-  };
-
-  // ── OPEN SESSION ──
-  window.openSession = async (id, name, members) => {
-    window._state.currentSession = { id, name, members };
-    document.getElementById('detail-title').textContent = name;
-    document.getElementById('detail-subtitle').textContent = members.join(', ');
-    document.getElementById('detail-members').innerHTML = members.map(m => `<span class="member-chip">${m}</span>`).join('');
-    showView('view-detail');
-    await loadExpenses(id);
-  };
-
-  // ── LOAD EXPENSES ──
-  window.loadExpenses = async (sessionId) => {
-    const q = query(collection(db, 'sessions', sessionId, 'expenses'), orderBy('createdAt', 'desc'));
-    onSnapshot(q, (snap) => {
-      const expenses = [];
-      snap.forEach(d => expenses.push({ id: d.id, ...d.data() }));
-      renderExpenses(expenses);
-      renderResult(expenses);
-    });
-  };
-
-  // ── RENDER EXPENSES ──
-  window.renderExpenses = (expenses) => {
-    const el = document.getElementById('expense-list');
-    if (!expenses.length) {
-      el.innerHTML = `<div class="empty-state"><div class="emoji">💸</div>Belum ada pengeluaran.<br>Tambahkan pengeluaran pertama.</div>`;
+// ── LOAD HOME ──
+const loadHome = () => {
+  if (S.unsub) { S.unsub(); S.unsub = null; }
+  const q = query(collection(db, 'sessions'), orderBy('createdAt', 'desc'));
+  S.unsub = onSnapshot(q, snap => {
+    const el = $('session-list');
+    if (snap.empty) {
+      el.innerHTML = `<div class="empty-state"><div class="emoji">🧾</div>Belum ada sesi.<br>Buat sesi baru untuk mulai.</div>`;
       return;
     }
-    el.innerHTML = expenses.map(e => `
-      <div class="expense-item">
-        <div class="expense-header">
-          <div>
-            <div class="expense-desc">${e.description}</div>
-            <div class="expense-meta">Dibayar ${e.payer} · ${e.splitType === 'equal' ? 'Rata' : 'Custom'}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="expense-amount">${fmt(e.amount)}</div>
-            <button class="expense-delete" onclick="deleteExpense('${e.id}')">🗑</button>
-          </div>
-        </div>
-        <div class="expense-participants">
-          ${e.splits.map(s => `<span class="participant-chip">${s.member}${e.splitType==='custom'?' '+fmt(s.amount):''}</span>`).join('')}
-        </div>
-      </div>`).join('');
-  };
-
-  // ── RENDER RESULT ──
-  window.renderResult = (expenses) => {
-    const { members } = window._state.currentSession;
-    const total = expenses.reduce((s, e) => s + e.amount, 0);
-    document.getElementById('detail-total').textContent = fmt(total);
-    document.getElementById('detail-per-orang').textContent = members.length ? fmt(total / members.length) + ' per orang (equal)' : '';
-
-    // net balance
-    const paid = {}, owed = {};
-    members.forEach(m => { paid[m] = 0; owed[m] = 0; });
-    expenses.forEach(e => {
-      paid[e.payer] = (paid[e.payer] || 0) + e.amount;
-      e.splits.forEach(s => { owed[s.member] = (owed[s.member] || 0) + s.amount; });
+    el.innerHTML = '';
+    snap.forEach(d => {
+      const s = d.data();
+      const lunas = s.status === 'lunas';
+      const card = document.createElement('div');
+      card.className = 'session-card' + (lunas ? ' lunas' : '');
+      card.innerHTML = `
+        <div class="session-card-name">${s.name} <span class="${lunas?'badge-lunas':'badge-open'}">${lunas?'LUNAS':'OPEN'}</span></div>
+        <div class="session-card-meta"><span>👥 ${s.members?.length||0} orang</span><span>${s.createdAt?.toDate?s.createdAt.toDate().toLocaleDateString('id-ID'):'—'}</span></div>`;
+      card.onclick = () => openSession(d.id, s);
+      el.appendChild(card);
     });
+  });
+};
 
-    const net = {};
-    members.forEach(m => net[m] = (paid[m] || 0) - (owed[m] || 0));
-
-    // render balances
-    document.getElementById('balance-list').innerHTML = members.map(m => {
-      const n = net[m] || 0;
-      const cls = n > 0 ? 'positive' : n < 0 ? 'negative' : 'zero';
-      const label = n > 0 ? `+${fmt(n)} (dibayar lebih)` : n < 0 ? `-${fmt(Math.abs(n))} (kurang)` : 'Lunas ✓';
-      return `<div class="balance-card">
-        <div>
-          <div class="balance-name">${m}</div>
-          <div class="balance-paid">Bayar ${fmt(paid[m]||0)} · Harusnya ${fmt(owed[m]||0)}</div>
-        </div>
-        <div class="balance-net ${cls}">${label}</div>
-      </div>`;
-    }).join('');
-
-    // simplify debt
-    const transfers = simplifyDebt(net);
-    const tEl = document.getElementById('transfer-list');
-    if (!transfers.length) {
-      tEl.innerHTML = `<div class="transfer-card" style="text-align:center;color:var(--accent);">🎉 Semua sudah lunas!</div>`;
-    } else {
-      tEl.innerHTML = transfers.map(t => `
-        <div class="transfer-card">
-          <div class="transfer-text"><strong>${t.from}</strong> <span class="transfer-arrow">→</span> <strong>${t.to}</strong></div>
-          <div class="transfer-amount">${fmt(t.amount)}</div>
-        </div>`).join('');
-    }
-  };
-
-  // ── SIMPLIFY DEBT ──
-  window.simplifyDebt = (net) => {
-    const creditors = [], debtors = [];
-    Object.entries(net).forEach(([m, n]) => {
-      if (n > 0.5) creditors.push({ m, n });
-      else if (n < -0.5) debtors.push({ m, n: -n });
-    });
-    creditors.sort((a,b) => b.n - a.n);
-    debtors.sort((a,b) => b.n - a.n);
-
-    const transfers = [];
-    let i = 0, j = 0;
-    while (i < creditors.length && j < debtors.length) {
-      const amt = Math.min(creditors[i].n, debtors[j].n);
-      if (amt > 0.5) transfers.push({ from: debtors[j].m, to: creditors[i].m, amount: amt });
-      creditors[i].n -= amt;
-      debtors[j].n -= amt;
-      if (creditors[i].n < 0.5) i++;
-      if (debtors[j].n < 0.5) j++;
-    }
-    return transfers;
-  };
-
-  // ── SPLIT TYPE ──
-  window.setSplitType = (type) => {
-    window._state.splitType = type;
-    document.getElementById('toggle-equal').classList.toggle('active', type === 'equal');
-    document.getElementById('toggle-custom').classList.toggle('active', type === 'custom');
-    document.querySelectorAll('.member-check-item').forEach(el => {
-      el.classList.toggle('custom', type === 'custom');
-    });
-    if (type === 'equal') recalcCustomWarning();
-  };
-
-  // ── OPEN ADD EXPENSE MODAL ──
-  window.openModal = (id) => {
-    if (id === 'modal-add-expense') {
-      const { members } = window._state.currentSession;
-      const payer = document.getElementById('exp-payer');
-      payer.innerHTML = members.map(m => `<option value="${m}">${m}</option>`).join('');
-      const list = document.getElementById('exp-participants');
-      list.innerHTML = members.map(m => `
-        <div class="member-check-item selected" data-member="${m}" onclick="toggleParticipant(this)">
-          <div class="check">✓</div>
-          <div class="name">${m}</div>
-          <input type="number" class="custom-amount" placeholder="0" inputmode="numeric"
-            onclick="event.stopPropagation()" oninput="recalcCustomWarning()" />
-        </div>`).join('');
-      window._state.splitType = 'equal';
-      document.getElementById('toggle-equal').classList.add('active');
-      document.getElementById('toggle-custom').classList.remove('active');
-    }
-    document.getElementById(id).classList.add('open');
-  };
-
-  window.toggleParticipant = (el) => {
-    el.classList.toggle('selected');
-    recalcCustomWarning();
-  };
-
-  window.recalcCustomWarning = () => {
-    if (window._state.splitType !== 'custom') {
-      document.getElementById('custom-total-warning').style.display = 'none';
-      return;
-    }
-    const total = parseFloat(document.getElementById('exp-amount').value) || 0;
-    const sum = [...document.querySelectorAll('.member-check-item.selected .custom-amount')]
-      .reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
-    const w = document.getElementById('custom-total-warning');
-    if (total && Math.abs(sum - total) > 1) {
-      w.style.display = 'block';
-      w.textContent = `Total custom ${fmt(sum)} ≠ total bayar ${fmt(total)} (selisih ${fmt(Math.abs(sum-total))})`;
-    } else {
-      w.style.display = 'none';
-    }
-  };
-
-  // ── ADD EXPENSE ──
-  window.addExpense = async () => {
-    const desc = document.getElementById('exp-desc').value.trim();
-    const amount = parseFloat(document.getElementById('exp-amount').value);
-    const payer = document.getElementById('exp-payer').value;
-    const { id: sessionId, members } = window._state.currentSession;
-    const type = window._state.splitType;
-
-    if (!desc) return toast('Deskripsi wajib diisi');
-    if (!amount || amount <= 0) return toast('Jumlah tidak valid');
-
-    const selected = [...document.querySelectorAll('.member-check-item.selected')].map(el => el.dataset.member);
-    if (!selected.length) return toast('Pilih minimal 1 peserta');
-
-    let splits;
-    if (type === 'equal') {
-      const share = amount / selected.length;
-      splits = selected.map(m => ({ member: m, amount: share }));
-    } else {
-      splits = [...document.querySelectorAll('.member-check-item.selected')].map(el => ({
-        member: el.dataset.member,
-        amount: parseFloat(el.querySelector('.custom-amount').value) || 0
-      }));
-      const sum = splits.reduce((s, x) => s + x.amount, 0);
-      if (Math.abs(sum - amount) > 1) return toast(`Total custom (${fmt(sum)}) ≠ total bayar`);
-    }
-
-    try {
-      await addDoc(collection(db, 'sessions', sessionId, 'expenses'), {
-        description: desc, amount, payer, splits, splitType: type,
-        createdAt: serverTimestamp()
-      });
-      toast('Pengeluaran disimpan ✓');
-      closeModal('modal-add-expense');
-      document.getElementById('exp-desc').value = '';
-      document.getElementById('exp-amount').value = '';
-    } catch(e) { toast('Gagal: ' + e.message); }
-  };
-
-  // ── DELETE EXPENSE ──
-  window.deleteExpense = async (expId) => {
-    if (!confirm('Hapus pengeluaran ini?')) return;
-    const { id: sessionId } = window._state.currentSession;
-    await deleteDoc(doc(db, 'sessions', sessionId, 'expenses', expId));
-    toast('Dihapus ✓');
-  };
-
-  // ── VIEW / NAV ──
-  window.showView = (id) => {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0, 0);
-  };
-  window.goHome = () => {
-    window._state.currentSession = null;
-    showView('view-home');
-  };
-
-  // ── TABS ──
-  window.switchTab = (id) => {
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      const contents = document.querySelectorAll('.tab-content');
-      const tabs = document.querySelectorAll('.tab');
-      tabs.forEach(tb => tb.classList.remove('active'));
-      contents.forEach(c => c.classList.remove('active'));
-    });
-    const tabs = document.querySelectorAll('.tab');
-    const contents = document.querySelectorAll('.tab-content');
-    tabs.forEach(t => t.classList.remove('active'));
-    contents.forEach(c => c.classList.remove('active'));
-    const idx = ['tab-hasil', 'tab-pengeluaran'].indexOf(id);
-    tabs[idx]?.classList.add('active');
-    document.getElementById(id)?.classList.add('active');
-  };
-
-  // ── INIT ──
-  loadSessions();
-
-  // SW Register
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+// ── OPEN SESSION ──
+window.openSession = async (id, data) => {
+  let sdata = data;
+  if (typeof data === 'string' || !data.members) {
+    const snap = await getDoc(doc(db, 'sessions', id));
+    sdata = snap.data();
   }
+  S.session = { id, ...sdata };
+  S.expenses = [];
+  S.splitType = 'equal';
+
+  $('d-title').textContent = sdata.name;
+  $('d-sub').textContent = sdata.members.join(' · ');
+  showView('view-detail');
+
+  // Build tx form
+  buildTxForm(sdata.members);
+
+  // Determine phase
+  if (sdata.status === 'lunas') {
+    showPhaseResult();
+  } else {
+    showPhaseInput();
+  }
+
+  // Listen expenses
+  if (S.unsub) { S.unsub(); S.unsub = null; }
+  const q = query(collection(db, 'sessions', id, 'expenses'), orderBy('createdAt', 'asc'));
+  S.unsub = onSnapshot(q, snap => {
+    S.expenses = [];
+    snap.forEach(d => S.expenses.push({ id: d.id, ...d.data() }));
+    renderTxList();
+    if ($('phase-result').style.display !== 'none') renderResult();
+  });
+};
+
+// ── BUILD TX FORM ──
+const buildTxForm = (members) => {
+  $('tx-payer').innerHTML = members.map(m => `<option value="${m}">${m}</option>`).join('');
+  buildParticipants(members);
+  $('tog-eq').classList.add('active');
+  $('tog-cu').classList.remove('active');
+  S.splitType = 'equal';
+};
+
+const buildParticipants = (members) => {
+  $('tx-participants').innerHTML = members.map(m => `
+    <div class="member-check-item selected" data-member="${m}" onclick="toggleP(this)">
+      <div class="chk">✓</div>
+      <div class="chk-name">${m}</div>
+      <input type="number" class="chk-amount" placeholder="0" inputmode="numeric" onclick="event.stopPropagation()" oninput="checkWarn()" />
+    </div>`).join('');
+};
+
+// ── SPLIT TYPE ──
+window.setTxSplit = type => {
+  S.splitType = type;
+  $('tog-eq').classList.toggle('active', type === 'equal');
+  $('tog-cu').classList.toggle('active', type === 'custom');
+  document.querySelectorAll('#tx-participants .member-check-item').forEach(el => el.classList.toggle('custom', type === 'custom'));
+  checkWarn();
+};
+
+window.toggleP = el => { el.classList.toggle('selected'); checkWarn(); };
+
+window.checkWarn = () => {
+  if (S.splitType !== 'custom') { $('tx-warn').style.display = 'none'; return; }
+  const total = parseFloat($('tx-amount').value) || 0;
+  const sum = [...document.querySelectorAll('#tx-participants .member-check-item.selected .chk-amount')].reduce((s, el) => s + (parseFloat(el.value) || 0), 0);
+  const w = $('tx-warn');
+  if (total && Math.abs(sum - total) > 1) { w.style.display = 'block'; w.textContent = `Total custom ${fmt(sum)} ≠ ${fmt(total)} (selisih ${fmt(Math.abs(sum-total))})`; }
+  else w.style.display = 'none';
+};
+
+// ── SAVE TX ──
+window.saveTx = async () => {
+  const desc = $('tx-desc').value.trim();
+  const amount = parseFloat($('tx-amount').value);
+  const payer = $('tx-payer').value;
+  if (!desc) return toast('Deskripsi wajib diisi');
+  if (!amount || amount <= 0) return toast('Jumlah tidak valid');
+
+  const selected = [...document.querySelectorAll('#tx-participants .member-check-item.selected')];
+  if (!selected.length) return toast('Pilih minimal 1 peserta');
+
+  let splits;
+  if (S.splitType === 'equal') {
+    const share = amount / selected.length;
+    splits = selected.map(el => ({ member: el.dataset.member, amount: share }));
+  } else {
+    splits = selected.map(el => ({ member: el.dataset.member, amount: parseFloat(el.querySelector('.chk-amount').value) || 0 }));
+    const sum = splits.reduce((s, x) => s + x.amount, 0);
+    if (Math.abs(sum - amount) > 1) return toast(`Total custom (${fmt(sum)}) ≠ total bayar`);
+  }
+
+  try {
+    await addDoc(collection(db, 'sessions', S.session.id, 'expenses'), {
+      description: desc, amount, payer, splits, splitType: S.splitType, createdAt: serverTimestamp()
+    });
+    // reset form
+    $('tx-desc').value = ''; $('tx-amount').value = '';
+    buildParticipants(S.session.members);
+    setTxSplit('equal');
+    toast('Tersimpan ✓');
+  } catch(e) { toast('Error: ' + e.message); }
+};
+
+// ── DELETE TX ──
+window.deleteTx = async (expId) => {
+  if (!confirm('Hapus pengeluaran ini?')) return;
+  await deleteDoc(doc(db, 'sessions', S.session.id, 'expenses', expId));
+  toast('Dihapus ✓');
+};
+
+// ── RENDER TX LIST ──
+const renderTxList = () => {
+  const el = $('tx-list');
+  const label = $('tx-list-label');
+  if (!S.expenses.length) { el.innerHTML = ''; label.style.display = 'none'; return; }
+  label.style.display = 'block';
+  el.innerHTML = S.expenses.map(e => `
+    <div class="tx-item">
+      <div class="tx-item-top">
+        <div><div class="tx-item-desc">${e.description}</div><div class="tx-item-meta">Dibayar ${e.payer} · ${e.splitType==='equal'?'Rata':'Custom'}</div></div>
+        <div style="display:flex;align-items:center;gap:8px;"><div class="tx-item-amount">${fmt(e.amount)}</div><button class="tx-delete" onclick="deleteTx('${e.id}')">🗑</button></div>
+      </div>
+      <div class="tx-chips">${e.splits.map(s=>`<span class="tx-chip">${s.member}${e.splitType==='custom'?' · '+fmt(s.amount):''}</span>`).join('')}</div>
+    </div>`).join('');
+};
+
+// ── PHASE CONTROL ──
+const showPhaseInput = () => {
+  $('phase-input').style.display = 'block';
+  $('phase-result').style.display = 'none';
+  updateSteps(2);
+  renderFab('input');
+};
+
+const showPhaseResult = () => {
+  $('phase-input').style.display = 'none';
+  $('phase-result').style.display = 'block';
+  updateSteps(3);
+  renderResult();
+  renderFab(S.session.status === 'lunas' ? 'lunas' : 'result');
+};
+
+const updateSteps = (active) => {
+  // dot 2
+  $('sdot-2').className = 'step-dot ' + (active > 2 ? 'done' : active === 2 ? 'active' : '');
+  $('sdot-2').textContent = active > 2 ? '✓' : '2';
+  $('slabel-2').className = 'step-label' + (active >= 2 ? ' active' : '');
+  $('sline-2').className = 'step-line' + (active > 2 ? ' done' : '');
+  // dot 3
+  $('sdot-3').className = 'step-dot ' + (active > 3 ? 'done' : active === 3 ? 'active' : '');
+  $('sdot-3').textContent = active > 3 ? '✓' : '3';
+  $('slabel-3').className = 'step-label' + (active >= 3 ? ' active' : '');
+};
+
+const renderFab = (mode) => {
+  const el = $('fab-area');
+  if (mode === 'input') {
+    el.innerHTML = `<div class="fab-group">
+      <button class="fab secondary" onclick="showPhaseInput()" style="flex:0.6;font-size:13px;">+ Pengeluaran</button>
+      <button class="fab" onclick="doSplitBill()">Split Bill 💰</button>
+    </div>`;
+  } else if (mode === 'result') {
+    el.innerHTML = `<div class="fab-group">
+      <button class="fab secondary" onclick="showPhaseInput()" style="flex:0.6;font-size:13px;">← Edit</button>
+      <button class="fab" onclick="markLunas()" style="background:var(--accent);">✓ Tandai Lunas</button>
+    </div>`;
+  } else if (mode === 'lunas') {
+    el.innerHTML = `<button class="fab secondary" onclick="showPhaseInput()" style="max-width:calc(480px - 32px);width:calc(100% - 32px);position:fixed;bottom:24px;left:50%;transform:translateX(-50%);">← Lihat Pengeluaran</button>`;
+  }
+};
+
+// ── SPLIT BILL ──
+window.doSplitBill = () => {
+  if (!S.expenses.length) return toast('Belum ada pengeluaran');
+  showPhaseResult();
+};
+
+// ── RENDER RESULT ──
+const renderResult = () => {
+  const { members, status } = S.session;
+  const total = S.expenses.reduce((s, e) => s + e.amount, 0);
+  $('res-total').textContent = fmt(total);
+  $('res-per').textContent = members.length ? fmt(total / members.length) + ' per orang (equal)' : '';
+
+  // net
+  const paid = {}, owed = {};
+  members.forEach(m => { paid[m] = 0; owed[m] = 0; });
+  S.expenses.forEach(e => {
+    paid[e.payer] = (paid[e.payer] || 0) + e.amount;
+    e.splits.forEach(s => { owed[s.member] = (owed[s.member] || 0) + s.amount; });
+  });
+  const net = {};
+  members.forEach(m => net[m] = (paid[m] || 0) - (owed[m] || 0));
+
+  // lunas banner
+  const lb = $('lunas-banner-wrap');
+  if (status === 'lunas') {
+    lb.innerHTML = `<div class="lunas-banner"><div class="icon">🎉</div><div class="title">LUNAS</div><div class="sub">Semua tagihan sudah diselesaikan</div></div>`;
+  } else { lb.innerHTML = ''; }
+
+  // transfers
+  const transfers = simplifyDebt(net);
+  const tEl = $('res-transfers');
+  if (!transfers.length) {
+    tEl.innerHTML = `<div class="transfer-card" style="text-align:center;"><div style="font-size:24px;margin-bottom:6px;">✅</div><div style="font-weight:600;color:var(--accent);">Semua sudah lunas!</div></div>`;
+  } else {
+    tEl.innerHTML = transfers.map(t => `
+      <div class="transfer-card" style="margin:0 16px 8px;">
+        <div class="transfer-from-to">${t.from} <span class="transfer-arrow">→</span> ${t.to}</div>
+        <div class="transfer-amount">${fmt(t.amount)}</div>
+      </div>`).join('');
+  }
+
+  // balances
+  $('res-balances').innerHTML = members.map(m => {
+    const n = net[m] || 0;
+    const cls = n > 0.5 ? 'pos' : n < -0.5 ? 'neg' : 'zero';
+    const label = n > 0.5 ? `+${fmt(n)}` : n < -0.5 ? fmt(n) : '✓ Lunas';
+    return `<div class="balance-row">
+      <div><div class="balance-name">${m}</div><div class="balance-sub">Bayar ${fmt(paid[m]||0)} · Porsi ${fmt(owed[m]||0)}</div></div>
+      <div class="balance-net ${cls}">${label}</div>
+    </div>`;
+  }).join('');
+
+  // tx detail
+  $('res-txlist').innerHTML = S.expenses.map(e => `
+    <div class="tx-item" style="margin:0 16px 8px;">
+      <div class="tx-item-top">
+        <div><div class="tx-item-desc">${e.description}</div><div class="tx-item-meta">Dibayar ${e.payer}</div></div>
+        <div class="tx-item-amount">${fmt(e.amount)}</div>
+      </div>
+      <div class="tx-chips">${e.splits.map(s=>`<span class="tx-chip">${s.member} ${e.splitType==='custom'?fmt(s.amount):fmt(s.amount)}</span>`).join('')}</div>
+    </div>`).join('');
+};
+
+// ── MARK LUNAS ──
+window.markLunas = async () => {
+  if (!confirm('Tandai sesi ini sebagai LUNAS? Semua tagihan dianggap sudah dibayar.')) return;
+  await updateDoc(doc(db, 'sessions', S.session.id), { status: 'lunas', lunasAt: serverTimestamp() });
+  S.session.status = 'lunas';
+  toast('Sesi ditandai LUNAS ✓');
+  renderFab('lunas');
+  renderResult();
+};
+
+// ── SIMPLIFY DEBT ──
+const simplifyDebt = net => {
+  const cr = [], db2 = [];
+  Object.entries(net).forEach(([m, n]) => {
+    if (n > 0.5) cr.push({ m, n: +n });
+    else if (n < -0.5) db2.push({ m, n: -n });
+  });
+  cr.sort((a,b) => b.n - a.n); db2.sort((a,b) => b.n - a.n);
+  const out = []; let i = 0, j = 0;
+  while (i < cr.length && j < db2.length) {
+    const amt = Math.min(cr[i].n, db2[j].n);
+    if (amt > 0.5) out.push({ from: db2[j].m, to: cr[i].m, amount: amt });
+    cr[i].n -= amt; db2[j].n -= amt;
+    if (cr[i].n < 0.5) i++;
+    if (db2[j].n < 0.5) j++;
+  }
+  return out;
+};
+
+// ── TABS ──
+window.switchTab = id => {
+  document.querySelectorAll('#view-detail .tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#view-detail .tab-content').forEach(c => c.classList.remove('active'));
+  const tabs = document.querySelectorAll('#view-detail .tab');
+  const ids = ['rt-transfer','rt-saldo','rt-detail'];
+  const idx = ids.indexOf(id);
+  if (tabs[idx]) tabs[idx].classList.add('active');
+  $(id)?.classList.add('active');
+};
+
+// ── NAV ──
+window.showView = id => {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
+};
+window.goHome = () => {
+  S.session = null;
+  loadHome();
+  showView('view-home');
+};
+window.showPhaseInput = showPhaseInput;
+
+// ── INIT ──
+loadHome();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
