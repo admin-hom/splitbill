@@ -34,11 +34,13 @@
     .section-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin: 20px 16px 8px; }
 
     /* SESSION LIST */
-    .session-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 0 16px 10px; cursor: pointer; transition: border-color 0.15s; }
+    .session-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 0 16px 10px; cursor: pointer; transition: border-color 0.15s; position: relative; }
     .session-card:active { border-color: var(--accent); }
     .session-card.lunas { border-color: rgba(74,222,128,0.3); }
-    .session-card-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .session-card-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; padding-right: 28px; }
     .session-card-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+    .session-card-del { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border: none; background: transparent; color: var(--muted); font-size: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
+    .session-card-del:active { background: rgba(248,113,113,0.15); color: #f87171; }
     .badge-lunas { background: var(--accent-dim); color: var(--accent); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
     .badge-open { background: rgba(251,191,36,0.12); color: var(--warn); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
 
@@ -317,7 +319,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc, getDoc }
+import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc, getDoc, getDocs, writeBatch }
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const db = getFirestore(initializeApp({
@@ -386,12 +388,31 @@ const loadHome = () => {
       const card = document.createElement('div');
       card.className = 'session-card' + (lunas ? ' lunas' : '');
       card.innerHTML = `
+        <button class="session-card-del" onclick="delSession(event,'${d.id}','${(s.name||'').replace(/'/g,"\\'")}')" title="Hapus sesi">🗑️</button>
         <div class="session-card-name">${s.name} <span class="${lunas?'badge-lunas':'badge-open'}">${lunas?'LUNAS':'OPEN'}</span></div>
         <div class="session-card-meta"><span>👥 ${s.members?.length||0} orang</span><span>${s.createdAt?.toDate?s.createdAt.toDate().toLocaleDateString('id-ID'):'—'}</span></div>`;
       card.onclick = () => openSession(d.id, s);
       el.appendChild(card);
     });
   });
+};
+
+// ── DELETE SESSION ──
+window.delSession = async (ev, id, name) => {
+  ev.stopPropagation();
+  if (!confirm(`Hapus sesi "${name}"? Semua data pengeluaran di dalamnya akan terhapus permanen.`)) return;
+  try {
+    const expSnap = await getDocs(collection(db, 'sessions', id, 'expenses'));
+    if (!expSnap.empty) {
+      const batch = writeBatch(db);
+      expSnap.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+    await deleteDoc(doc(db, 'sessions', id));
+    toast('Sesi dihapus');
+  } catch (e) {
+    toast('Gagal hapus sesi');
+  }
 };
 
 // ── OPEN SESSION ──
