@@ -2,7 +2,7 @@
   "name": "SplitKita",
   "short_name": "SplitKita",
   "description": "Split bill bareng, gampang & cepet",
-  "start_url": "/",
+  "start_url": "https://admin-hom.github.io/splitbill/",
   "display": "standalone",
   "background_color": "#0d0d0d",
   "theme_color": "#0d0d0d",
